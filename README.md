@@ -1,79 +1,219 @@
-# ShyftOff Operational Analytics SQL Scripts
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ███████╗██╗  ██╗██╗   ██╗███████╗████████╗ ██████╗ ███████╗███████╗      ║
+║   ██╔════╝██║  ██║╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔═══██╗██╔════╝██╔════╝      ║
+║   ███████╗███████║ ╚████╔╝ █████╗     ██║   ██║   ██║█████╗  █████╗        ║
+║   ╚════██║██╔══██║  ╚██╔╝  ██╔══╝     ██║   ██║   ██║██╔══╝  ██╔══╝        ║
+║   ███████║██║  ██║   ██║   ██║        ██║   ╚██████╔╝██║     ██║           ║
+║   ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝    ╚═════╝ ╚═╝     ╚═╝           ║
+║                                                                              ║
+║            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓               ║
+║            ▓ OPERATIONAL ANALYTICS SQL SCRIPTS COLLECTION  ▓               ║
+║            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓               ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-A collection of SQL scripts designed to analyze, monitor, and improve operational performance on the ShyftOff platform. The scripts progress from initial performance monitoring to deep-dive data-quality investigations, culminating in a powerful executive dashboard.
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ "In Data We Trust, In Queries We Find Truth"                   │
+     │                                              - Platform Team    │
+     └─────────────────────────────────────────────────────────────────┘
 
----
+═══════════════════════════════════════════════════════════════════════════════
+▓▓▓ THE ANALYTICAL JOURNEY ▓▓▓
+═══════════════════════════════════════════════════════════════════════════════
 
-## The Analytical Journey
+┌──[ PHASE 1: DISCOVERY ]──────────────────────────────────────────────────────┐
+│ Scripts 01-06 established baseline metrics, uncovering critical anomalies   │
+│ in our data ecosystem. The hunt for truth began here.                       │
+└──────────────────────────────────────────────────────────────────────────────┘
 
-1. **Initial Performance Monitoring**  
-   The first set of scripts (`01`–`06`) established baseline metrics for agent performance, campaign health, and data quality.
+┌──[ PHASE 2: INVESTIGATION ]──────────────────────────────────────────────────┐
+│ Scripts 07-15 dove deep into the anomalies, revealing systemic flaws in     │
+│ metric definitions and campaign operations.                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
 
-2. **Discovery of Anomalies**  
-   These early queries uncovered significant data anomalies—negative hour values and reliability scores over 100%.
+┌──[ PHASE 3: STRATEGIC INSIGHTS ]─────────────────────────────────────────────┐
+│ Scripts 16-22 transformed raw findings into executive insights and           │
+│ real-time monitoring capabilities.                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
 
-3. **Root Cause Analysis**  
-   We traced these anomalies to a flaw in metric definitions: **`actual_hrs`** and **`reliable_hrs`** could exceed **`locked_hrs`** and **`scheduled_hrs`**, making percentage-based KPIs (Fill Rate, Reliability Rate) misleading.
+═══════════════════════════════════════════════════════════════════════════════
+▓▓▓ SCRIPT MANIFEST ▓▓▓
+═══════════════════════════════════════════════════════════════════════════════
 
-4. **Strategic Reporting**  
-   With that insight, the final scripts (`07` and `08`) were created:
-   - **Executive Dashboard**: High-level view combining fill, reliability, and data-quality scores.
-   - **Deep Dive Tool**: “Smoking gun” query showing rows where reliability >100%, for data-governance discussions.
+All scripts target the `so` schema in production database.
 
----
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ░░░ FOUNDATION LAYER ░░░                           │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-## Scripts & Usage
+[01] agent_performance_and_reliability.sql
+     ├─ Purpose: Agent reliability trends & top performer identification
+     └─ Status:  ⚠️  Template only (references non-existent table)
 
-All scripts target the `so` schema in production.  
+[02] campaign_health_monitoring.sql
+     ├─ Purpose: Real-time staffing gaps & campaign comparison
+     └─ Status:  ✅ Operational
 
-### `01_agent_performance_and_reliability.sql`
-- **Purpose:** Analyze agent reliability and performance trends; identify top performers and potential issues.  
-- **Status:** Relies on a non-existent `so.vmv_campaign_agent_shift_demand` table—serves as an ideal-state template.
+[03] onboarding_and_attrition_analysis.sql
+     ├─ Purpose: 30-day new agent survival rates
+     └─ Status:  ⚠️  Template only (future implementation)
 
-### `02_campaign_health_monitoring.sql`
-- **Purpose:** Check campaign health by finding staffing gaps and comparing reliability vs. fill rates.  
-- **Status:** Second query works and delivers a high-level comparison of campaign metrics.
+[04] vpn_security_detection_helpers.sql
+     ├─ Purpose: Flag suspicious login patterns & duplicate records
+     └─ Status:  ✅ Operational (t_at_allpeople analysis)
 
-### `03_onboarding_and_attrition_analysis.sql`
-- **Purpose:** Compute new-agent 30-day survival rates to assess onboarding effectiveness and churn.  
-- **Status:** Template only—assumes a future table for survival analysis.
+[05] automation_opportunity_finder.sql
+     ├─ Purpose: Identify manual processes ripe for automation
+     └─ Status:  ✅ Operational
 
-### `04_vpn_security_detection_helpers.sql`
-- **Purpose:** Flag potentially fraudulent or non-compliant user activity via login patterns and record creation in `t_at_allpeople`.  
-- **Status:** Corrected version works; identifies duplicate records and unusual activity.
+[06] data_quality_checks.sql
+     ├─ Purpose: Quantify data integrity issues
+     └─ Status:  ✅ Critical discovery tool
 
-### `05_automation_opportunity_finder.sql`
-- **Purpose:** Find tables with many manually entered (nullable) columns as candidates for process automation.  
-- **Status:** Corrected and functional; highlights high-percent-nullable tables.
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           ░░░ DISCOVERY LAYER ░░░                           │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-### `06_data_quality_checks.sql`
-- **Purpose:** Quantify data-integrity issues—negative hours, future-dated shifts, impossible reliability scores.  
-- **Status:** Critical for initial discoveries; corrected version runs cleanly.
+[07] executive_dashboard_query.sql
+     ├─ Purpose: Combined KPI view with health status flags
+     └─ Status:  ✅ Production ready
 
-### `07_executive_dashboard_query.sql`
-- **Purpose:** Capstone dashboard combining fill rates, reliability, data-quality scores, and a calculated **Campaign Health Status**.  
-- **Key Logic:** Uses a CTE to aggregate raw numbers before KPI calculation, including a `campaign_health_status` flag for critical issues.
+[08] data_quality_deep_dive.sql
+     ├─ Purpose: "Smoking gun" evidence of >100% reliability
+     └─ Status:  ✅ Critical for governance discussions
 
-### `08_data_quality_deep_dive.sql`
-- **Purpose:** Expose rows with reliability > 100%—concrete evidence of flawed metric definitions.  
-- **Usage:** Present output to stakeholders to drive a data-governance discussion on metric definitions.
+[09] email_search_self.sql
+     ├─ Purpose: Self-identification in t_at_allpeople via email
+     └─ Status:  ✅ User lookup utility
 
----
+[10] columns_vrpt_demand2.sql
+     ├─ Purpose: Schema discovery for vrpt_campaign_shift_demand2
+     └─ Status:  ✅ Development tool
 
-## Key Findings & Business Impact
+[11] today_locks.sql
+     ├─ Purpose: Extract current day lock numbers by campaign
+     └─ Status:  ✅ Daily operations
 
-- **Systemic Data Definition Flaw**  
-  Core metrics are fundamentally broken: `actual_hrs` and `reliable_hrs` can exceed `locked_hrs` and `scheduled_hrs`, making KPIs like Fill Rate and Reliability misleading.
+[12] tomorrow_locks.sql
+     ├─ Purpose: Pre-fetch next day's lock data for automation
+     └─ Status:  ✅ Automation enabler
 
-- **NRTC Campaign in Crisis**  
-  Lowest agent reliability at **71.6%** and **1,260** data-quality incidents over 14 days render its data untrustworthy.
+[13] gsheets_nrtc_format.sql
+     ├─ Purpose: Format lock data for Google Sheets integration
+     └─ Status:  ✅ NRTC-specific export
 
-- **The “Healthy Campaign” Paradox**  
-  The “Citizens” campaign appears ✅ “Healthy” on paper (90.1% reliability) but has the highest number of understaffed intervals—hiding a significant service-level risk.
+[14] lock_anomaly_analysis.sql
+     ├─ Purpose: Statistical analysis of lock pattern anomalies
+     └─ Status:  ✅ Pattern detection
 
----
+[15] Find specific_shift_intervals_with >100%_reliability.sql
+     ├─ Purpose: Pinpoint exact intervals with impossible metrics
+     └─ Status:  ✅ Data governance ammunition
 
-## Next Step
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ░░░ STRATEGIC LAYER ░░░                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-Hold a **data governance meeting** to redefine core business metrics.  
-Use the output from `08_data_quality_deep_dive.sql` as the central evidence to guide the discussion.
+[16] Executive_Dashboard.sql
+     ├─ Purpose: C-suite ready metrics with trend analysis
+     └─ Status:  ✅ Weekly exec meetings
+
+[17] VPN_Detection.sql
+     ├─ Purpose: Identify potential VPN usage patterns
+     └─ Status:  ✅ Security monitoring
+
+[18] real_time_monitor.sql
+     ├─ Purpose: Live campaign performance tracking
+     └─ Status:  ✅ Operations dashboard feed
+
+[19] predictable_values.sql
+     ├─ Purpose: Find consistent patterns for automation
+     └─ Status:  ✅ Automation planning
+
+[20] agent_insights.sql
+     ├─ Purpose: Deep agent behavior analysis
+     └─ Status:  🔧 In development
+
+[21] nrtc_microscope.sql
+     ├─ Purpose: NRTC campaign forensic analysis
+     └─ Status:  ✅ Crisis response tool
+
+[22] negative_hours.sql
+     ├─ Purpose: Investigate negative hour anomalies
+     └─ Status:  ✅ Data quality investigation
+
+═══════════════════════════════════════════════════════════════════════════════
+▓▓▓ KEY FINDINGS & BUSINESS IMPACT ▓▓▓
+═══════════════════════════════════════════════════════════════════════════════
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║ 🚨 CRITICAL: SYSTEMIC DATA DEFINITION FLAW                           ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║ • actual_hrs can exceed locked_hrs                                   ║
+║ • reliable_hrs can exceed scheduled_hrs                              ║
+║ • Result: Fill Rate & Reliability KPIs are MEANINGLESS               ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║ 🔥 NRTC CAMPAIGN IN CRISIS                                           ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║ • Reliability: 71.6% (lowest across all campaigns)                   ║
+║ • Data Quality Incidents: 1,260 over 14 days                        ║
+║ • Recommendation: IMMEDIATE intervention required                     ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║ ⚠️  THE "HEALTHY CAMPAIGN" PARADOX                                   ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║ • Citizens shows ✅ "Healthy" (90.1% reliability)                    ║
+║ • BUT: Highest understaffed interval count                           ║
+║ • Hidden Risk: Service level failures masked by flawed metrics       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+▓▓▓ USAGE GUIDE ▓▓▓
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─[ Daily Operations ]─────────────────────────────────────────────────────────┐
+│ Morning:  Run scripts 11, 18 for current state                              │
+│ Midday:   Check script 16 for executive dashboard                           │
+│ Evening:  Run script 12 to prep next day's locks                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─[ Weekly Analysis ]──────────────────────────────────────────────────────────┐
+│ Monday:   Scripts 14, 15 for anomaly review                                 │
+│ Wednesday: Script 19 for automation opportunities                            │
+│ Friday:   Scripts 7, 8 for executive report prep                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─[ Crisis Response ]──────────────────────────────────────────────────────────┐
+│ Campaign Issues: Scripts 21 (NRTC), 22 (negative hours)                     │
+│ Security Alerts: Script 17 (VPN detection)                                  │
+│ Data Quality:    Scripts 6, 8, 15                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+▓▓▓ NEXT STEPS ▓▓▓
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DATA GOVERNANCE MEETING (URGENT)
+   └─ Present script 08 output as evidence
+   
+2. METRIC REDEFINITION PROJECT
+   └─ Redefine actual_hrs, reliable_hrs, locked_hrs relationships
+   
+3. NRTC INTERVENTION
+   └─ Use script 21 findings to drive immediate improvements
+
+4. AUTOMATION ROLLOUT
+   └─ Implement Google Sheets integration using scripts 11-13
+
+═══════════════════════════════════════════════════════════════════════════════
+                              
+                    ┌─────────────────────────────┐
+                    │  "Data doesn't lie,         │
+                    │   but metrics can deceive"  │
+                    └─────────────────────────────┘
+                    
+                           EOF • HACK THE PLANET
