@@ -1,61 +1,79 @@
+# ShyftOff Operational Analytics SQL Scripts
 
-# SQL Scripts for ShyftOff Reporting and Automation
-
-This private repository contains SQL queries and one Google Apps Script designed for querying ShyftOff's PostgreSQL-based data warehouse. These queries help explore productivity, analyze locking patterns, and automate report generation for campaigns such as NRTC, Citizens, and others.
-
-## 📁 Repository Structure
-
-```
-.
-├── README.md                  # Documentation for this repo
-├── sql_scripts/               # Folder containing SQL files
-│   ├── 01_productive_definition.sql
-│   ├── 02_check_bigquery_tables.sql
-│   ├── 03_report_views_lookup.sql
-│   └── ... etc.
-└── scripts/
-    └── google_sheets_lock_update.js  # Apps Script for automating Google Sheets
-```
-
-## 🧠 SQL Query Summary
-
-| #  | Query Name | Description |
-|----|------------|-------------|
-| 1  | Explore the productivity definition | Shows columns and types in `vmv_productive_cas`. |
-| 2  | Check what BigQuery tables are replicated | Lists all tables in `bq.t_table_definitions`. |
-| 3  | Find all the report views (vrpt_*) | Finds tables starting with `vrpt_` in `so` schema. |
-| 4  | List 10 campaigns | Returns 10 rows from `so.t_campaign`. |
-| 5  | List base tables in 'so' schema | Lists base tables in schema `so`. |
-| 6  | Check columns in `t_at_allpeople` | Lists columns and types from `so.t_at_allpeople`. |
-| 7  | Safe limited name search | Searches for `Julian Waits` with limit 5. |
-| 8  | Search by name (ImportTS window) | Finds entries in last 7 days by `ImportTS`. |
-| 9  | Search by email | Locates records with matching email in 7-day window. |
-| 10 | Columns in `vrpt_campaign_shift_demand2` | Lists schema for that report view. |
-| 11 | Today's lock counts | Gets today’s lock counts by campaign and interval. |
-| 12 | Tomorrow's lock schedule | Query to prep upcoming shift sheet entries. |
-| 13 | Google Sheets-ready format | Data formatted for daily Google Sheets input. |
-| 14 | Lock pattern analytics | Averages/min/max grouped by campaign, time, day. |
+A collection of SQL scripts designed to analyze, monitor, and improve operational performance on the ShyftOff platform. The scripts progress from initial performance monitoring to deep-dive data-quality investigations, culminating in a powerful executive dashboard.
 
 ---
 
-## 📜 JavaScript Script
+## The Analytical Journey
 
-| File | Description |
-|------|-------------|
-| `scripts/google_sheets_lock_update.js` | Google Apps Script using JDBC to pull data into Google Sheets automatically using campaign-level filters. Includes SSL-based connection and formatting. |
+1. **Initial Performance Monitoring**  
+   The first set of scripts (`01`–`06`) established baseline metrics for agent performance, campaign health, and data quality.
 
-## 🔐 Notes
+2. **Discovery of Anomalies**  
+   These early queries uncovered significant data anomalies—negative hour values and reliability scores over 100%.
 
-- All scripts here are intended for **internal use only**.
-- No secrets or passwords should be stored in SQL files. Use placeholders or environment variables where needed.
-- The JavaScript contains credentials temporarily for testing – ensure they are secured or moved to secret managers for production use.
+3. **Root Cause Analysis**  
+   We traced these anomalies to a flaw in metric definitions: **`actual_hrs`** and **`reliable_hrs`** could exceed **`locked_hrs`** and **`scheduled_hrs`**, making percentage-based KPIs (Fill Rate, Reliability Rate) misleading.
 
-## 🛠️ Future Improvements
-
-- Add parameterized versions of SQL queries.
-- Use `.env` or secret store for sensitive connection details.
-- Integrate with GitHub Actions or scripting layer to execute queries programmatically.
+4. **Strategic Reporting**  
+   With that insight, the final scripts (`07` and `08`) were created:
+   - **Executive Dashboard**: High-level view combining fill, reliability, and data-quality scores.
+   - **Deep Dive Tool**: “Smoking gun” query showing rows where reliability >100%, for data-governance discussions.
 
 ---
 
-© C-Kuro / Julian Waits II – This is a private repo for internal SQL automation and analysis. Not for redistribution.
+## Scripts & Usage
+
+All scripts target the `so` schema in production.  
+
+### `01_agent_performance_and_reliability.sql`
+- **Purpose:** Analyze agent reliability and performance trends; identify top performers and potential issues.  
+- **Status:** Relies on a non-existent `so.vmv_campaign_agent_shift_demand` table—serves as an ideal-state template.
+
+### `02_campaign_health_monitoring.sql`
+- **Purpose:** Check campaign health by finding staffing gaps and comparing reliability vs. fill rates.  
+- **Status:** Second query works and delivers a high-level comparison of campaign metrics.
+
+### `03_onboarding_and_attrition_analysis.sql`
+- **Purpose:** Compute new-agent 30-day survival rates to assess onboarding effectiveness and churn.  
+- **Status:** Template only—assumes a future table for survival analysis.
+
+### `04_vpn_security_detection_helpers.sql`
+- **Purpose:** Flag potentially fraudulent or non-compliant user activity via login patterns and record creation in `t_at_allpeople`.  
+- **Status:** Corrected version works; identifies duplicate records and unusual activity.
+
+### `05_automation_opportunity_finder.sql`
+- **Purpose:** Find tables with many manually entered (nullable) columns as candidates for process automation.  
+- **Status:** Corrected and functional; highlights high-percent-nullable tables.
+
+### `06_data_quality_checks.sql`
+- **Purpose:** Quantify data-integrity issues—negative hours, future-dated shifts, impossible reliability scores.  
+- **Status:** Critical for initial discoveries; corrected version runs cleanly.
+
+### `07_executive_dashboard_query.sql`
+- **Purpose:** Capstone dashboard combining fill rates, reliability, data-quality scores, and a calculated **Campaign Health Status**.  
+- **Key Logic:** Uses a CTE to aggregate raw numbers before KPI calculation, including a `campaign_health_status` flag for critical issues.
+
+### `08_data_quality_deep_dive.sql`
+- **Purpose:** Expose rows with reliability > 100%—concrete evidence of flawed metric definitions.  
+- **Usage:** Present output to stakeholders to drive a data-governance discussion on metric definitions.
+
+---
+
+## Key Findings & Business Impact
+
+- **Systemic Data Definition Flaw**  
+  Core metrics are fundamentally broken: `actual_hrs` and `reliable_hrs` can exceed `locked_hrs` and `scheduled_hrs`, making KPIs like Fill Rate and Reliability misleading.
+
+- **NRTC Campaign in Crisis**  
+  Lowest agent reliability at **71.6%** and **1,260** data-quality incidents over 14 days render its data untrustworthy.
+
+- **The “Healthy Campaign” Paradox**  
+  The “Citizens” campaign appears ✅ “Healthy” on paper (90.1% reliability) but has the highest number of understaffed intervals—hiding a significant service-level risk.
+
+---
+
+## Next Step
+
+Hold a **data governance meeting** to redefine core business metrics.  
+Use the output from `08_data_quality_deep_dive.sql` as the central evidence to guide the discussion.
